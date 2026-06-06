@@ -1,0 +1,12 @@
+model_list:
+  - model_name: llama3-local
+    litellm_params:
+      model: ollama/phi3:mini
+      base_url: http://host.docker.internal:11434
+
+general_settings:
+  master_key: replace  # Opcional
+  
+litellm_settings:
+  drop_params: True
+  set_verbose: True
