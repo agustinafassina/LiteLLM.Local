@@ -4,8 +4,23 @@ model_list:
       model: ollama/phi3:mini
       base_url: http://host.docker.internal:11434
 
+  - model_name: llama3.2-1b-local
+    litellm_params:
+      model: ollama/llama3.2:1b
+      base_url: http://host.docker.internal:11434
+
+  - model_name: qwen2.5-1.5b-local
+    litellm_params:
+      model: ollama/qwen2.5:1.5b
+      base_url: http://host.docker.internal:11434
+
+  - model_name: gemma2-2b-local
+    litellm_params:
+      model: ollama/gemma2:2b
+      base_url: http://host.docker.internal:11434
+
 general_settings:
-  master_key: replace  # Opcional
+  master_key: replace_with_your_master_key  # Opcional
   
 litellm_settings:
   drop_params: True
