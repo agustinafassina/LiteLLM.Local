@@ -1,18 +1,44 @@
-version: '3.8'
-
 services:
   litellm:
-    image: ghcr.io/berriai/litellm:main-latest
+    image: ghcr.io/berriai/litellm-database:main-latest
     container_name: litellm-proxy
     ports:
       - "4000:4000"
     volumes:
       - ./config.yaml:/app/config.yaml
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-llmproxy}:${POSTGRES_PASSWORD:-changeme}@db:5432/${POSTGRES_DB:-litellm}
     command: --config /app/config.yaml --port 4000 --detailed_debug
     restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - ai-network
+
+  db:
+    image: postgres:16
+    container_name: litellm-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-litellm}
+      POSTGRES_USER: ${POSTGRES_USER:-llmproxy}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     networks:
       - ai-network
 
 networks:
   ai-network:
     driver: bridge
+
+volumes:
+  postgres_data:

@@ -1,4 +1,4 @@
-FROM ghcr.io/berriai/litellm:main-latest
+FROM ghcr.io/berriai/litellm-database:main-latest
 
 WORKDIR /app
 

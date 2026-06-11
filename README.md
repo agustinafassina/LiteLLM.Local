@@ -34,8 +34,24 @@ Use the **API model** name in requests (e.g. `"model": "qwen2.5-1.5b-local"`).
 | Parameter  | Default value                       |
 |------------|-------------------------------------|
 | Ollama URL | `http://host.docker.internal:11434` |
-| Master key | Set in `config.yaml`                |
+| Master key | Set in `config.yaml` (must start with `sk-`) |
 | Port       | `4000`                              |
+
+### 🐘 PostgreSQL
+LiteLLM uses PostgreSQL to persist usage logs, API keys, and spend tracking.
+
+| Parameter | Default value |
+|-----------|---------------|
+| Host      | `localhost` (port `5432`) |
+| Database  | `litellm`     |
+| User      | `llmproxy`    |
+| Password  | `changeme`    |
+
+Copy `.env.example` to `.env` and change the credentials before running in production:
+
+```bash
+cp .env.example .env
+```
 
 Edit `config.yaml` to add models, change the API key, or update the Ollama URL. Restart the proxy after changes:
 
@@ -44,20 +60,39 @@ docker compose restart litellm
 ```
 
 ## 🛠️ Commands
-### ▶️ Start the proxy
+### ▶️ Start the stack
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ### 📜 View logs
 ```bash
-docker-compose logs -f litellm
+docker compose logs -f litellm
+docker compose logs -f db
 ```
 
-### ⏹️ Stop the proxy
+### ⏹️ Stop the stack
 ```bash
-docker-compose down
+docker compose down
 ```
+
+### 🗄️ Connect to PostgreSQL
+```bash
+docker compose exec db psql -U llmproxy -d litellm
+```
+
+Once inside, list the LiteLLM tables and check the usage logs:
+
+```sql
+\dt
+SELECT model, total_tokens, "startTime" FROM "LiteLLM_SpendLogs" ORDER BY "startTime" DESC LIMIT 5;
+```
+
+> **Windows / PowerShell:** passing `-c "..."` mangles the double quotes that LiteLLM's table names need. Pipe the query through stdin instead:
+>
+> ```powershell
+> 'SELECT model, total_tokens, "startTime" FROM "LiteLLM_SpendLogs" ORDER BY "startTime" DESC LIMIT 5;' | docker compose exec -T db psql -U llmproxy -d litellm
+> ```
 
 ### 💬 Test a chat request (PowerShell)
 With the proxy and Ollama running:
@@ -79,7 +114,8 @@ curl http://localhost:4000/v1/chat/completions \
 ## 📁 Repository structure
 | File               | Description                              |
 |--------------------|------------------------------------------|
-| `docker-compose.yml` | Runs the LiteLLM container             |
+| `docker-compose.yml` | Runs LiteLLM and PostgreSQL              |
 | `config.yaml`        | Models, master key, and LiteLLM settings |
+| `.env.example`       | PostgreSQL credentials template          |
 | `Dockerfile`         | Alternative image (manual build)         |
 | `chat-try.ps1`       | Test script for Windows PowerShell       |

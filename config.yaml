@@ -20,7 +20,8 @@ model_list:
       base_url: http://host.docker.internal:11434
 
 general_settings:
-  master_key: replace_with_your_master_key  # Opcional
+  master_key: replace_with_your_key  # Opcional
+  database_url: os.environ/DATABASE_URL
   
 litellm_settings:
   drop_params: True
