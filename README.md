@@ -3,6 +3,11 @@ Local [LiteLLM](https://docs.litellm.ai/) proxy that exposes an OpenAI-compatibl
 
 Useful for tools that speak the OpenAI protocol (Cursor, scripts, HTTP clients) while pointing at local models instead of the cloud.
 
+## 🔄 Workflow
+![Workflow: User → LiteLLM API → PostgreSQL](./workflow.png)
+
+The client sends an OpenAI-compatible request to the LiteLLM API, which reads its configuration and routes the prompt to the selected model. The response is returned to the client while usage history, metrics, and settings are persisted in PostgreSQL.
+
 ## 📋 Requirements
 - [Docker](https://www.docker.com/) and Docker Compose
 - [Ollama](https://ollama.com/) running on the host (port `11434`)
@@ -119,3 +124,4 @@ curl http://localhost:4000/v1/chat/completions \
 | `.env.example`       | PostgreSQL credentials template          |
 | `Dockerfile`         | Alternative image (manual build)         |
 | `chat-try.ps1`       | Test script for Windows PowerShell       |
+| `workflow.png`       | Architecture / request-flow diagram      |
