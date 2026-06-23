@@ -1,4 +1,4 @@
-# 🤖 LiteLLM Local 🦙🐳
+# 🤖 LiteLLM Local
 Local [LiteLLM](https://docs.litellm.ai/) proxy that exposes an OpenAI-compatible API and routes requests to [Ollama](https://ollama.com/) models on your machine.
 
 Useful for tools that speak the OpenAI protocol (Cursor, scripts, HTTP clients) while pointing at local models instead of the cloud.
